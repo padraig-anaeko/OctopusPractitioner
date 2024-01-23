@@ -170,6 +170,24 @@ step "verify-application-run-a-script" {
     }
 }
 
+step "update-load-balaner" {
+    name = "Update Load Balaner"
+
+    action {
+        action_type = "Octopus.Script"
+        properties = {
+            Octopus.Action.RunOnServer = "true"
+            Octopus.Action.Script.ScriptBody = <<-EOT
+                $releaseNumber = $OctopusParameters["Octopus.Release.Number"]
+                Write-Highlight "Updated the Load Balancer to point to version $releaseNumber of the application"
+                EOT
+            Octopus.Action.Script.ScriptSource = "Inline"
+            Octopus.Action.Script.Syntax = "PowerShell"
+        }
+        worker_pool = "hosted-windows"
+    }
+}
+
 step "notify-team-in-slack-of-deployment-status" {
     condition = "Always"
     name = "Notify team in Slack of deployment status"
